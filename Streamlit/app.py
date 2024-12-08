@@ -1,4 +1,5 @@
 import streamlit as st
+from datetime import timedelta
 
 # Function to determine the strength of the coffee
 def determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, brew_time_sec):
@@ -25,17 +26,20 @@ st.write(
 st.sidebar.header("Enter your coffee brewing details")
 
 # User inputs for the coffee brewing process
-coffee_dose = st.sidebar.number_input("Coffee Dose (grams)", min_value=0.1, value=10.0, step=0.1)
+coffee_dose = st.sidebar.number_input("Coffee Dose (grams)", min_value=1, value=10, step=1)
 water_temp = st.sidebar.slider("Water Temperature (°C)", min_value=60, max_value=100, value=90)
 water_vol = st.sidebar.number_input("Water Volume (ml)", min_value=50, value=200, step=10)
 num_pours = st.sidebar.number_input("Number of Pours", min_value=1, value=3, step=1)
-brew_time = st.sidebar.number_input("Brew Time (minutes)", min_value=1, value=4, step=1)
+brew_time = st.sidebar.text_input("Brew Time (mm:ss)", value="0:00")
 
-# Convert brew time from minutes to seconds
-brew_time_sec = brew_time * 60
+def seconder(brew_time):
+    mins, secs = map(float, brew_time.split(':'))
+    td = timedelta(minutes=mins, seconds=secs)
+    brew_time_seconds = td.total_seconds()
+    return brew_time_seconds
 
 # Calculate coffee strength
-coffee_strength = determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, brew_time_sec)
+coffee_strength = determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, brew_time_seconds)
 
 # Display the result
 st.subheader("Coffee Strength")
