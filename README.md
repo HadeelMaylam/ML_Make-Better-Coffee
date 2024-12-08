@@ -19,12 +19,9 @@ Welcome to the **Coffee Strength Calculator** app! This application allows coffe
 
 * **Visual Appeal**: The app provides an intuitive interface with coffee-related images and smooth interactions.
 
-
 ## Developers 👏
 
-**Salwa Alshamrani**
-**Hadeel Almaylam**
-**Mohammad Alkhatim**
+**Salwa Alshamrani**  
+**Hadeel Almaylam**  
+**Mohammad Alkhatim**  
 **Tariq ALshammari**
-
-
