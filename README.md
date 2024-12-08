@@ -24,4 +24,4 @@ Welcome to the **Coffee Strength Calculator** app! This application allows coffe
 **Salwa Alshamrani**  
 **Hadeel Almaylam**  
 **Mohammad Alkhatim**  
-**Tariq ALshammari**
+**Tariq Alshammari**
