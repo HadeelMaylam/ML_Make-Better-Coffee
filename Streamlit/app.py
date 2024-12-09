@@ -17,7 +17,7 @@ def determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, bre
 st.set_page_config(page_title="Coffee Strength Calculator", page_icon="☕", layout="wide")
 
 # Title and description
-st.title("Coffee Strength Calculator ☕")
+st.title("Make a Better Coffee ☕")
 st.write(
     "Welcome to the Coffee Strength Calculator! Enter the details of your coffee brewing process to determine if your coffee is strong, balanced, or weak. Let's make that perfect cup!"
 )
@@ -30,16 +30,42 @@ coffee_dose = st.sidebar.number_input("Coffee Dose (grams)", min_value=1, value=
 water_temp = st.sidebar.slider("Water Temperature (°C)", min_value=60, max_value=100, value=90)
 water_vol = st.sidebar.number_input("Water Volume (ml)", min_value=50, value=200, step=10)
 num_pours = st.sidebar.number_input("Number of Pours", min_value=1, value=3, step=1)
-brew_time = st.sidebar.text_input("Brew Time (mm:ss)", value="0:00")
 
+# Initialize brew time in session_state if not already set
+if "brew_time" not in st.session_state:
+    st.session_state.brew_time = "2:00"
+
+# Function to convert brew time to seconds
 def seconder(brew_time):
-    mins, secs = map(float, brew_time.split(':'))
+    mins, secs = map(int, brew_time.split(':'))
     td = timedelta(minutes=mins, seconds=secs)
     brew_time_seconds = td.total_seconds()
     return brew_time_seconds
 
+# Add time adjustment buttons
+def update_brew_time(brew_time):
+    mins, secs = map(int, brew_time.split(':'))
+    total_seconds = mins * 60 + secs
+
+    # Increment by 10 seconds but not exceed 3:00
+    if total_seconds < 180:
+        total_seconds += 10
+        if total_seconds > 180:  # Ensure it doesn't go beyond 3:00
+            total_seconds = 180
+        new_minutes = total_seconds // 60
+        new_seconds = total_seconds % 60
+        return f"{new_minutes:02}:{new_seconds:02}"
+    return brew_time
+
+# Display + button for increasing brew time
+if st.sidebar.button("Add 10 seconds"):
+    st.session_state.brew_time = update_brew_time(st.session_state.brew_time)
+
+# Display the current brew time
+st.sidebar.write(f"Current Brew Time: {st.session_state.brew_time}")
+
 # Calculate coffee strength
-coffee_strength = determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, brew_time_seconds)
+coffee_strength = determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, seconder(st.session_state.brew_time))
 
 # Display the result
 st.subheader("Coffee Strength")
