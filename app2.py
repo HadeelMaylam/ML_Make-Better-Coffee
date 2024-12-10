@@ -63,7 +63,13 @@ if st.button("Calculate Coffee Strength"):
 
         #print(input_predict[0])
         st.write((float(input_predict[0])))
-        
+        if((float(input_predict[0])) < 1.25):
+            st.write(str('UnderExtracted (Weak)'))
+        elif((float(input_predict[0])) >= 1.25 and (float(input_predict[0])) <= 1.45):
+            st.write(str('Well Extracted (Balanced)'))
+        else:
+            st.write(str('OverExtracted (Strong)'))
+
 
 
     except Exception as e:
