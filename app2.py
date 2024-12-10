@@ -4,7 +4,7 @@ import pandas as pd
 import pickle
 import sklearn
 # Load the trained model
-with open(r'Model\lineareg_model.pkl', 'rb') as file:
+with open(r'C:\Users\7o7e\Desktop\TA\MLproject\machine-learning-project-team-4\model.pkl', 'rb') as file:
     model = pickle.load(file)
 
 # Streamlit page design
@@ -58,15 +58,8 @@ if st.button("Calculate Coffee Strength"):
         input_predict = model.predict(input_df)
 
         print(input_predict)
-        # Map prediction to text
-        coffee_strength = {
-            0: "Your coffee is weak!",
-            1: "Your coffee is weak balanced!",
-            2: "Your coffee is balanced.",
-            3: "Your coffee is balanced strong.",
-            4: "Your coffee is strong.",
-        }
-        st.write(coffee_strength.get(int(input_predict[0]), "I can't determine the coffee strength."))
+    
+        st.write((int(input_predict[0])))
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
