@@ -17,7 +17,7 @@ st.set_page_config(page_title="Coffee TDS Calculator ☕", page_icon="☕", layo
 
 # Add custom CSS for the entire page
 st.markdown(
-    """
+    """ 
     <style>
         /* Page background */
         body {
