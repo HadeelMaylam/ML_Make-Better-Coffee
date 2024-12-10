@@ -17,7 +17,7 @@ st.set_page_config(page_title="Make better coffee", page_icon="☕", layout="wid
 # Title and description
 st.title("Coffee ☕")
 st.write(
-    "Welcome to the Coffee Strength Calculator! Enter the details of your coffee brewing process. Let's make that perfect cup!"
+    "Welcome to the TDS Calculator! Enter the details of your coffee brewing process. Let's make that perfect cup!"
 )
 
 # Input Fields
