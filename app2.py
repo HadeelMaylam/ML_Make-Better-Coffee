@@ -4,9 +4,8 @@ import pandas as pd
 import pickle
 import sklearn
 # Load the trained model
-with open(r'Model\trained_model.pkl', 'rb') as file:
+with open(r'Model\lineareg_model.pkl', 'rb') as file:
     model = pickle.load(file)
-
 
 # Streamlit page design
 st.set_page_config(page_title="Make better coffee", page_icon="☕", layout="wide")
