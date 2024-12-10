@@ -4,8 +4,12 @@ import pandas as pd
 import pickle
 import sklearn
 # Load the trained model
-with open(r'C:\Users\7o7e\Desktop\TA\MLproject\machine-learning-project-team-4\model.pkl', 'rb') as file:
-    model = pickle.load(file)
+def new_func():
+    with open(r'C:\Users\80104061\Documents\GitHub\machine-learning-project-team-4\Model\lineareg_model.pkl', 'rb') as file:
+        model = pickle.load(file)
+    return model
+
+model = new_func()
 
 # Streamlit page design
 st.set_page_config(page_title="Make better coffee", page_icon="☕", layout="wide")
@@ -46,7 +50,7 @@ if st.button("Calculate Coffee Strength"):
         }
         input_df = pd.DataFrame(data)
 
-        # Ensure all features are present
+        #Ensure all features are present
         for feature in model.feature_names_in_:
             if feature not in input_df.columns:
                 input_df[feature] = 0  # Add missing features with default value
@@ -57,9 +61,11 @@ if st.button("Calculate Coffee Strength"):
         # Predict coffee strength
         input_predict = model.predict(input_df)
 
-        print(input_predict)
-    
-        st.write((int(input_predict[0])))
+        #print(input_predict[0])
+        st.write((float(input_predict[0])))
+        
+
+
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
