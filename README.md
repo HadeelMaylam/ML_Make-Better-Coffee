@@ -15,9 +15,9 @@ Welcome to the **Make Better Coffee** app! This application allows coffee lovers
     * **Strong**: Bold, rich coffee.
       ![image](strong.jpg)
     * **Balanced**: Well-rounded flavor.
-      ![image](Balenced.jpg)
+      ![image](Blanced.jpg)
     * **Weak**: Light coffee that may need adjustment.
-      ![image](weel.jpg)
+      ![image](week.jpg)
 
 * **Visual Appeal**: The app provides an intuitive interface with coffee-related images and smooth interactions.
 
