@@ -13,8 +13,11 @@ Welcome to the **Make Better Coffee** app! This application allows coffee lovers
 
 * **Coffee Strength Evaluation**: Based on the entered parameters, the app will calculate the strength of your coffee:
     * **Strong**: Bold, rich coffee.
+      ![image](strong.png)
     * **Balanced**: Well-rounded flavor.
+      ![image](Balenced.png)
     * **Weak**: Light coffee that may need adjustment.
+      ![image](weel.png)
 
 * **Visual Appeal**: The app provides an intuitive interface with coffee-related images and smooth interactions.
 
