@@ -1,85 +1,173 @@
 import streamlit as st
 from datetime import timedelta
+import pandas as pd
+import pickle
+import sklearn
 
-# Function to determine the strength of the coffee
-def determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, brew_time_sec):
-    # Simplified model to evaluate coffee strength (this can be adjusted as needed)
-    strength_score = (coffee_dose * 0.5) + (water_temp * 0.2) - (water_vol * 0.1) + (num_pours * 0.3) + (brew_time_sec * 0.05)
+# Load the trained model
+def new_func():
+    with open(r'Model\lineareg_model.pkl', 'rb') as file:
+        model = pickle.load(file)
+    return model
 
-    if strength_score > 30:
-        return "Strong"
-    elif 20 <= strength_score <= 30:
-        return "Balanced"
-    else:
-        return "Weak"
+model = new_func()
 
 # Streamlit page design
-st.set_page_config(page_title="Coffee Strength Calculator", page_icon="☕", layout="wide")
+st.set_page_config(page_title="Coffee TDS Calculator ☕", page_icon="☕", layout="wide")
 
-# Title and description
-st.title("Make a Better Coffee ☕")
-st.write(
-    "Welcome to the Coffee Strength Calculator! Enter the details of your coffee brewing process to determine if your coffee is strong, balanced, or weak. Let's make that perfect cup!"
+# Add custom CSS for the entire page
+st.markdown(
+    """ 
+    <style>
+        /* Page background */
+        body {
+            background-color: #FDF3E6; /* Light coffee beige */
+            color: #4B3832; /* Coffee brown font color */
+            font-family: 'Verdana', sans-serif;
+        }
+
+        /* Sidebar styling */
+        .css-1d391kg {
+            background-color: #F4EDE6; /* Sidebar light coffee beige */
+        }
+
+        /* Input fields */
+        .stSidebar input, .stSidebar .st-slider {
+            color: #4B3832; /* Text color for inputs */
+        }
+
+        /* Buttons */
+        button {
+            background-color: #D3B8AE !important; /* Soft coffee tan */
+            color: #4B3832 !important; /* Coffee brown text */
+            font-family: 'Verdana', sans-serif;
+            border-radius: 8px !important; /* Rounded corners for buttons */
+            padding: 8px !important;
+            font-size: 16px !important;
+        }
+
+        button:hover {
+            background-color: #C6A49A !important; /* Slightly darker hover effect */
+        }
+
+        /* TDS box styling */
+        .tds-box {
+            background-color: #FFF8E7; /* Light beige */
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .tds-box h2 {
+            color: #6B4226; /* Coffee brown */
+            font-family: 'Georgia', serif; /* Elegant font for TDS display */
+        }
+
+        /* Extracted strength messages */
+        .under-extracted {
+            color: #A0522D; /* Weak coffee brown */
+        }
+        .balanced {
+            color: #228B22; /* Balanced green */
+        }
+        .over-extracted {
+            color: #B22222; /* Strong red */
+        }
+
+        /* Page title */
+        h1, h3, p {
+            text-align: center;
+            font-family: 'Georgia', serif; /* Elegant font for titles */
+            color: #4B3832; /* Coffee brown */
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
-# Input Fields
+# Title and description
+st.markdown(
+    """
+    <h1>Coffee TDS Calculator ☕</h1>
+    <p>Welcome to the Coffee TDS Calculator! Enter the details of your coffee brewing process and let's make better coffee.</p>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Sidebar Input Fields
 st.sidebar.header("Enter your coffee brewing details")
+
+def seconder(brew_time):
+    mins, secs = map(float, brew_time.split(':'))
+    td = timedelta(minutes=mins, seconds=secs)
+    return td.total_seconds()
 
 # User inputs for the coffee brewing process
 coffee_dose = st.sidebar.number_input("Coffee Dose (grams)", min_value=1, value=10, step=1)
 water_temp = st.sidebar.slider("Water Temperature (°C)", min_value=60, max_value=100, value=90)
 water_vol = st.sidebar.number_input("Water Volume (ml)", min_value=50, value=200, step=10)
 num_pours = st.sidebar.number_input("Number of Pours", min_value=1, value=3, step=1)
+brew_time = st.sidebar.text_input("Brew Time (min:sec)", value="0:00")
 
-# Initialize brew time in session_state if not already set
-if "brew_time" not in st.session_state:
-    st.session_state.brew_time = "2:00"
+# Button to trigger prediction
+if st.button("Calculate TDS"):
+    try:
+        brew_time_seconds = seconder(brew_time)
 
-# Function to convert brew time to seconds
-def seconder(brew_time):
-    mins, secs = map(int, brew_time.split(':'))
-    td = timedelta(minutes=mins, seconds=secs)
-    brew_time_seconds = td.total_seconds()
-    return brew_time_seconds
+        # Prepare input data
+        data = {
+            "dose (g)": [coffee_dose],
+            "water temp ( C )": [water_temp],
+            "water vol (ml)": [water_vol],
+            "number of pours": [num_pours],
+            "seconds": [brew_time_seconds],
+        }
+        input_df = pd.DataFrame(data)
 
-# Add time adjustment buttons
-def update_brew_time(brew_time):
-    mins, secs = map(int, brew_time.split(':'))
-    total_seconds = mins * 60 + secs
+        # Ensure all features are present
+        for feature in model.feature_names_in_:
+            if feature not in input_df.columns:
+                input_df[feature] = 0  # Add missing features with default value
 
-    # Increment by 10 seconds but not exceed 3:00
-    if total_seconds < 180:
-        total_seconds += 10
-        if total_seconds > 180:  # Ensure it doesn't go beyond 3:00
-            total_seconds = 180
-        new_minutes = total_seconds // 60
-        new_seconds = total_seconds % 60
-        return f"{new_minutes:02}:{new_seconds:02}"
-    return brew_time
+        # Reorder columns to match the model's training order
+        input_df = input_df[model.feature_names_in_]
 
-# Display + button for increasing brew time
-if st.sidebar.button("Add 10 seconds"):
-    st.session_state.brew_time = update_brew_time(st.session_state.brew_time)
+        # Predict coffee strength
+        input_predict = model.predict(input_df)
 
-# Display the current brew time
-st.sidebar.write(f"Current Brew Time: {st.session_state.brew_time}")
+        # Display Results
+        tds = float(input_predict[0])
+        st.markdown(
+            f"""
+            <div class="tds-box">
+                <h2>TDS: {tds:.2f}</h2>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-# Calculate coffee strength
-coffee_strength = determine_coffee_strength(coffee_dose, water_temp, water_vol, num_pours, seconder(st.session_state.brew_time))
+        if tds < 1.25:
+            st.markdown(
+                """
+                <h3 class="under-extracted">UnderExtracted (Weak)</h3>
+                """,
+                unsafe_allow_html=True,
+            )
+        elif 1.25 <= tds <= 1.45:
+            st.markdown(
+                """
+                <h3 class="balanced">Well Extracted (Balanced)</h3>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                """
+                <h3 class="over-extracted">OverExtracted (Strong)</h3>
+                """,
+                unsafe_allow_html=True,
+            )
 
-# Display the result
-st.subheader("Coffee Strength")
-st.write(f"Based on your inputs, your coffee is **{coffee_strength}**.")
-
-# Display explanation
-if coffee_strength == "Strong":
-    st.write("Your coffee is strong! You used a good amount of coffee with high temperature and a decent brew time. Enjoy your bold cup!")
-elif coffee_strength == "Balanced":
-    st.write("Your coffee is balanced! You've found a nice middle ground with your inputs.")
-else:
-    st.write("Your coffee is weak. Maybe try using more coffee, a higher temperature, or a longer brew time next time.")
-
-# Add some visual appeal with coffee-related images
-st.image("https://www.pexels.com/photo/person-holding-a-mug-of-coffee-1366911/", caption="Enjoy your coffee!", use_column_width=True)
-
-# Optionally, add more styling or widgets to enhance the user experience
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
