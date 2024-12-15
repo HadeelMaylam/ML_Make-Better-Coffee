@@ -21,4 +21,5 @@ Welcome to the **Make Better Coffee** app! This application allows coffee lovers
 
 * **Visual Appeal**: The app provides an intuitive interface with coffee-related images and smooth interactions.
 
+[Try TDS](https://make-better-coffee-ml.streamlit.app/)
 
